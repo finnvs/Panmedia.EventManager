@@ -1,0 +1,13 @@
+﻿Name: Panmedia.EventManager
+AntiForgery: enabled
+Author: Finn Vilsbaek, Panmedia ApS
+Website: http://orchardproject.net
+Version: 1.0
+OrchardVersion: 1.0
+Description: Member Events Manager
+Features:
+    Panmedia.EventManager:
+		Name: Panmedia Event Manager
+		Category: Panmedia Tools
+        Description: Member Events Manager
+		Dependencies: Panmedia.Artist, Orchard.Localization

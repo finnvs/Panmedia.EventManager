@@ -1,0 +1,58 @@
+﻿@using Panmedia.EventManager.ViewModels;
+@using Panmedia.EventManager.Models;
+@using Orchard.Mvc.Html;
+@using Orchard.Utility.Extensions;
+
+@*@model MemberEventVM*@  @*test - can driver deliver model, as in a standard content item rendering - yes, we can!*@
+
+@{
+    Script.Require("JQuery");
+}
+
+@*<div>
+    @T("Short Description"): <b>@Model.EventDescription</b>
+    <br />
+    @T("Location"): <b>@Model.EventAddress</b>
+    <br />
+    @T("Start Date"): <b>@Model.EventStartUtc</b>
+    <br />
+    @T("End Date"): <b>@Model.EventStopUtc</b>
+    </div>*@
+<div>
+    @*@Display(BuildDisplay(layoutPart, "#display type#"))*@ @*display type: Summary / Detail*@
+</div>
+<br />
+
+<br />
+<div>
+    <p>
+       @T("Tak for din tilmelding!")
+    </p>
+</div>
+
+
+<div>
+    <h5>Tilmeldte medlemmer: @Model.ParticipatingMembers.Count</h5>
+    <p>
+        @if (Model.ParticipatingMembers.Count >= 1)
+        {
+
+            foreach (ParticipantRecord p in Model.ParticipatingMembers)
+            {
+                <div class="row">
+                    <div class="col-sm-3">
+                        <a href="~/Profile/@p.UserName"><b>@p.ParticipantName</b></a>
+                    </div>
+                    <div class="col-sm-5">
+                        @p.ParticipantComment
+                    </div>                    
+                </div>
+            }
+        }
+        else
+        {
+            <b>Ingen medlemmer er pt. tilmeldt.</b><br />
+        }
+    </p>
+</div>
+

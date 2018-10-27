@@ -1,0 +1,12 @@
+﻿<Placement>
+  <Place Parts_MemberEvent_Edit="Content:1"/>
+  <Match DisplayType="Detail">
+    <Place Parts_MemberEvent="Content:10"/>
+  </Match>
+  <Match DisplayType="Summary">
+    <Place Parts_MemberEvent="Meta:10"/>
+  </Match>
+  <Match DisplayType="SummaryAdmin">
+    <Place Parts_MemberEvent_Admin_Summary="Meta:10"/>
+  </Match>  
+</Placement>

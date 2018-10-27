@@ -1,0 +1,120 @@
+﻿@using Panmedia.EventManager.ViewModels;
+@using Panmedia.EventManager.Models;
+@using Orchard.Mvc.Html;
+@using Orchard.Utility.Extensions;
+
+@*@model MemberEventVM*@  @*test - can driver deliver model, as in a standard content item rendering - yes, we can!*@
+
+@{
+    Script.Require("JQuery");
+    Script.Include("toastr.min.js").AtFoot();
+    Style.Include("Styles/toastr.min.css").AtHead();
+}
+
+@*<div>
+    @T("Short Description"): <b>@Model.EventDescription</b>
+    <br />
+    @T("Location"): <b>@Model.EventAddress</b>
+    <br />
+    @T("Start Date"): <b>@Model.EventStartUtc</b>
+    <br />
+    @T("End Date"): <b>@Model.EventStopUtc</b>
+    </div>*@
+<div>
+    @*@Display(BuildDisplay(layoutPart, "#display type#"))*@ @*display type: Summary / Detail*@
+</div>
+<br />
+<div>
+    @*API KEY needed for display of Google Static Map*@
+    <img src="@Model.GoogleStaticMapLink">
+</div>
+<br />
+<div>
+    <p>
+        @if (HttpContext.Current.Request.IsAuthenticated)
+        {
+            // @Html.ActionLink(T("Register for this event").ToString(), "RegisterForEvent", new { Controller = "Event", Area = "EventManager", userName = HttpContext.Current.User.Identity.Name, contentItemId = this.Model.EventId}, null)
+            <span class="btn btn-primary btn-sm" data-toggle="modal" data-target="#myModal" onclick="loadRegisterModal(userName = '@HttpContext.Current.User.Identity.Name', eventItemId = '@Model.EventId')">
+                @T("Tilmeld dig til begivenheden")
+            </span>
+        }
+        else
+        {
+            @Html.ActionLink(T("Log på for at tilmelde dig denne begivenhed").ToString(), "LogOn", new { Controller = "Account", Area = "Orchard.Users", ReturnUrl = Context.Request.RawUrl })
+        }
+        <br />
+        @if (TempData["message"] != null)
+        {
+            <br /><span class="highlight">@TempData["message"]</span><br />
+        }
+    </p>
+</div>
+
+<!-- Modal -->
+<div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-content"></div>
+</div>
+<!-- /.modal -->
+
+<div>
+    <h5>Tilmeldte medlemmer: @Model.ParticipatingMembers.Count</h5>
+    <p>
+        @if (Model.ParticipatingMembers.Count >= 1)
+        {
+
+            foreach (ParticipantRecord p in Model.ParticipatingMembers)
+            {
+                <div class="row">
+                    <div class="col-sm-3">
+                        <a href="~/Profile/@p.UserName"><b>@p.ParticipantName</b></a>
+                    </div>
+                    <div class="col-sm-5">
+                        @p.ParticipantComment
+                    </div>
+                    <div class="col-sm-4">
+                        @if (p.UserName == HttpContext.Current.User.Identity.Name)
+                        {
+                            // display a button / actionlink to delete current user from the participant list
+                            @Html.ActionLink(T("Afmeld dig"), "DeleteParticipant",
+                               new
+                               {
+                                   Controller = "Event",
+                                   Area = "Panmedia.EventManager",
+                                   userName = HttpContext.Current.User.Identity.Name,
+                                   eventId = Model.EventId
+                               },
+                               new { @class = "btn btn-info" }
+                            )
+                        }
+                    </div>
+                </div>
+            }
+        }
+        else
+        {
+            <b>Ingen medlemmer er pt. tilmeldt.</b><br />
+        }
+    </p>
+</div>
+
+@using (Script.Foot())
+{
+    <script type="text/javascript">
+        function loadRegisterModal(userName, eventItemId) {
+            $.ajax({
+                type: "GET",
+                url: '@Url.Action("RegisterModalPopUp", "Event", new { area = "Panmedia.EventManager" })',
+                traditional: true,
+                data: {
+                    userName: userName,
+                    eventItemId: eventItemId,
+                    __RequestVerificationToken: '@Html.AntiForgeryTokenValueOrchard()'
+                },
+            }).done(function (response) {
+                // alert(response);
+                $('#myModal .modal-content').html(response);
+                return;
+            })
+        }
+    </script>
+}

@@ -1,0 +1,116 @@
+﻿@using Panmedia.EventManager.ViewModels;
+@model Panmedia.EventManager.ViewModels.MemberEventVM
+
+@{
+    Script.Require("jQuery").AtFoot();
+    Script.Require("jQueryUI").AtFoot();
+    Script.Require("jQueryUI_DatePicker").AtFoot();
+    Script.Require("jQueryUI_TimePicker").AtFoot();
+    Script.Require("jQueryUI_SliderAccess").AtFoot();
+   
+    Style.Require("jQueryUI").AtHead();    
+    Style.Require("jQueryUI_DatePicker").AtHead();
+    Style.Require("jQueryUI_TimePicker").AtHead();
+}
+
+<fieldset>    
+    <legend>Begivenhed</legend>
+    <div class="editor-label">
+        @Html.LabelFor(m => m.EventAddress, @T("Adresse"))
+    </div>
+    <div class="editor-field">
+        <input id="@Html.FieldIdFor(m => m.EventAddress)" class="textMedium" type="text" placeholder="Adresse på stedet" value="@Model.EventAddress" name="@Html.FieldNameFor(m => m.EventAddress)" size="60" />
+        @*@Html.TextBoxFor(m => m.Question, new { @class = "form-control textMedium" })*@
+        @Html.ValidationMessageFor(m => m.EventAddress)
+    </div>    
+    <div class="editor-label">
+        @Html.LabelFor(m => m.EventDescription, @T("Kort beskrivelse"))
+    </div>
+    <div class="editor-field">
+        @*<input id="@Html.FieldIdFor(m => m.EventDescription)" class="textMedium" type="text" placeholder="Kort beskrivelse" value="@Model.EventDescription" name="@Html.FieldNameFor(m => m.EventDescription)" size="60" />*@
+        @Html.TextAreaFor(m => m.EventDescription, new { @class = "form-control textMedium" })
+        @Html.ValidationMessageFor(m => m.EventDescription)
+    </div>
+
+    <div class="editor-label">
+        @Html.LabelFor(m => m.GoogleStaticMapLink, @T("Google Static Map Link"))
+    </div>
+    <div class="editor-field">
+        @Html.TextAreaFor(m => m.GoogleStaticMapLink)
+        @Html.ValidationMessageFor(m => m.GoogleStaticMapLink)
+    </div>
+
+    <div class="editor-label">
+        @Html.LabelFor(m => m.EventStartUtc, @T("Startdato:"))
+    </div>
+    @*<div class="editor-field">
+        @Html.EditorFor(m => m.EventStartUtc)
+        @Html.ValidationMessageFor(m => m.EventStartUtc)
+    </div>*@
+    <div>
+        <input type="text" value="@Model.EventStartUtc" id="from-date-picker" name="MemberEventPart.EventStartUtc" />
+        @Html.ValidationMessageFor(m => m.EventStartUtc)
+    </div>
+
+    <div class="editor-label">
+        @Html.LabelFor(m => m.EventStopUtc, @T("Slutdato:"))
+    </div>
+    @*<div class="editor-field">
+        @Html.EditorFor(m => m.EventStopUtc)
+        @Html.ValidationMessageFor(m => m.EventStopUtc)
+    </div>*@
+    <div>
+        <input type="text" value="@Model.EventStopUtc" id="to-date-picker" name="MemberEventPart.EventStopUtc" />
+        @Html.ValidationMessageFor(m => m.EventStopUtc)
+    </div>
+
+    <div class="editor-label">
+        @Html.LabelFor(m => m.MaxAttendees, @T("Maksimalt antal deltagere"))
+    </div>
+    <div class="editor-field">
+        <input id="@Html.FieldIdFor(m => m.MaxAttendees)" class="text-small" type="text" value="@Model.MaxAttendees" step="1" name="@Html.FieldNameFor(m => m.MaxAttendees)" min="1" max="100" title="Maximum antal deltagere" />
+        @*@Html.EditorFor(m => m.MaxAttendees)*@
+        @Html.ValidationMessageFor(m => m.MaxAttendees)
+    </div>
+    <div class="editor-label">
+        @Html.LabelFor(m => m.Shown, @T("Skal begivenheden være synlig for alle brugere?"))
+    </div>
+    <div class="editor-field">
+        @Html.CheckBoxFor(m => m.Shown, new { @checked = Model.Shown })
+        @Html.ValidationMessageFor(m => m.Shown)
+    </div>
+
+    <div class="editor-label">
+        @Html.LabelFor(m => m.WaitingList, @T("Skal der oprettes en venteliste til begivenheden?"))
+    </div>
+    <div class="editor-field">
+        @Html.CheckBoxFor(m => m.WaitingList, new { @checked = Model.WaitingList })
+        @Html.ValidationMessageFor(m => m.WaitingList)
+    </div>
+
+   
+</fieldset>
+
+@using (Script.Foot())
+{
+    //if (WorkContext.GetState<object>("CalendarPickerLocalization") != null)
+    //{
+    //    return;
+    //}
+    //WorkContext.SetState("CalendarPickerLocalization", new object());
+
+    <script type="text/javascript">
+        $('#from-date-picker').datetimepicker({
+            controlType: 'select',
+            oneLine: true,
+            dateFormat: 'yy-mm-dd',
+            timeFormat: 'HH:mm'           
+        });
+        $('#to-date-picker').datetimepicker({
+            controlType: 'select',
+            oneLine: true,
+            dateFormat: 'yy-mm-dd',
+            timeFormat: 'HH:mm'
+        });
+    </script>   
+}

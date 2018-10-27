@@ -1,0 +1,114 @@
+﻿@using Panmedia.EventManager.ViewModels;
+@using Orchard.Mvc.Html;
+@using Orchard.Utility.Extensions;
+
+@model EventIndexVM
+@{
+    Layout.Title = T("Events").ToString();
+}
+
+@using (Html.BeginFormAntiForgeryPost())
+{
+    @Html.ValidationSummary()
+    <fieldset class="bulk-actions">
+        <label for="publishActions">@T("Actions:")</label>
+        <select id="publishActions" name="@Html.NameOf(m => m.Options.BulkAction)">
+            @Html.SelectOption(Model.Options.BulkAction, EventIndexBulkAction.None, T("Choose action...").ToString())
+            @Html.SelectOption(Model.Options.BulkAction, EventIndexBulkAction.Open, T("Open").ToString())
+            @Html.SelectOption(Model.Options.BulkAction, EventIndexBulkAction.Close, T("Close").ToString())
+            @Html.SelectOption(Model.Options.BulkAction, EventIndexBulkAction.Delete, T("Delete").ToString())
+        </select>
+        <button type="submit" name="submit.BulkEdit" value="@T("Apply")">@T("Apply")</button>
+    </fieldset>
+    <fieldset class="bulk-actions">
+        <label for="filterResults">@T("Filter:")</label>
+        <select id="filterResults" name="@Html.NameOf(m => m.Options.Filter)">
+            @Html.SelectOption(Model.Options.Filter, EventIndexFilter.All, T("All Events").ToString())
+            @Html.SelectOption(Model.Options.Filter, EventIndexFilter.Open, T("Open Events").ToString())
+            @Html.SelectOption(Model.Options.Filter, EventIndexFilter.Closed, T("Closed Events").ToString())
+        </select>
+        <button type="submit" name="submit.Filter" value="@T("Apply")">@T("Apply")</button>
+    </fieldset>
+    <br />
+    <fieldset class="bulk-actions">
+        <a href="@Url.Action("Create", "Event", new { area = "Panmedia.EventManager", id = "Event", returnUrl = @ViewContext.RequestContext.HttpContext.Request.ToUrlString() })">Create New Event</a>
+    </fieldset>
+    <fieldset>
+        <table class="items" summary="@T("This is a table of events in your application")">
+            <colgroup>
+                <col id="Col1" />
+                <col id="Col2" />
+                <col id="Col3" />
+                <col id="Col4" />
+                <col id="Col5" />
+                <col id="Col6" />
+            </colgroup>
+            <thead>
+                <tr>
+                    <th scope="col">&nbsp;&darr;</th>
+                    <th scope="col">@T("Status")</th>
+                    <th scope="col">@T("Event Title")</th>
+                    <th scope="col">@T("Start Date")</th>
+                    <th scope="col">@T("End Date")</th>
+                    <th scope="col">@T("Actions")</th>
+                </tr>
+            </thead>
+            @{var eventIndex = 0;}
+            <tbody>
+                @foreach (var eventEntry in Model.Events)
+                {
+                    <tr itemscope="itemscope" itemid="@eventEntry.Event.Id" itemtype="http://panmedia.dk/data/Event">
+                        <td>
+                            <input type="hidden" value="@eventEntry.Event.Id" name="@Html.NameOf(m => m.Events[eventIndex].Event.Id)"/>
+                            <input type="hidden" value="@eventEntry.EventTitle" name="@Html.NameOf(m =>  m.Events[eventIndex].EventTitle)"/>
+                            <input type="checkbox" value="true" name="@Html.NameOf(m =>  m.Events[eventIndex].IsChecked)"/>
+                        </td>
+                        <td>
+                            @if (eventEntry.Event.Shown)
+                            { @T("Open") }
+                            else
+                            { @T("Closed") }
+                        </td>
+                        <td>
+                            <div class="EventTitle" itemprop="EventTitle">@eventEntry.EventTitle</div>
+                        </td>
+                        <td>
+                            <div class="EventStart">@eventEntry.Event.EventStartUtc</div>
+                        </td>
+                        <td>
+                            <div class="EventEnd">@eventEntry.Event.EventStopUtc</div>                       
+                        </td>
+                        <td>
+                            <div class="actions">
+                                @*@if (eventEntry.Event.Shown)
+                                {
+                                    <a href="@Url.Action("Close", new { eventEntry.Event.Id, returnUrl = ViewContext.RequestContext.HttpContext.Request.ToUrlString() })" itemprop="CloseUrl UnsafeUrl">@T("Close")</a>@T(" | ")
+                                }
+                                else
+                                {
+                                    <a href="@Url.Action("Open", new { eventEntry.Event.Id, returnUrl = ViewContext.RequestContext.HttpContext.Request.ToUrlString() })" itemprop="OpenUrl UnsafeUrl">@T("Open")</a>@T(" | ")
+                                }*@
+                                @*<a href="@Url.Action("Edit", new { area = "Contents", id = eventEntry.Event.Id })" title="@T("Edit")">@T("Edit")</a>@T(" | ")*@
+                                <a href="@Url.Action("Edit", new { id = eventEntry.Event.Id })" title="@T("Edit")">@T("Edit")</a>@T(" | ")
+                                @* kald til edit metoden på event controlleren istedet - vil returnere view direkte, uden save knap*@
+                                @*<a href="@Url.Action("Edit", "Event", new { area = "Panmedia.EventManager", id = eventEntry.Event.Id })" title="@T("Edit")">@T("Edit")</a>@T(" | ")*@ 
+                                <a href="@Url.Action("Delete", new { eventEntry.Event.Id, returnUrl = ViewContext.RequestContext.HttpContext.Request.ToUrlString() })" itemprop="RemoveUrl UnsafeUrl">@T("Delete")</a> @T(" | ")
+                                @*<a href="@Url.Action("Details", new { eventEntry.Event.Id, })">@T("Details")</a>@T(" | ")*@
+                                <a href="@Url.Action("ExportToXml", new { eventEntry.Event.Id })">@T("Export to XML")</a>                                
+                            </div>
+                        </td>
+                    </tr>
+                                eventIndex = eventIndex + 1;
+                }
+            </tbody>
+        </table>
+        @Display(Model.Pager)
+    </fieldset>
+}
+
+@using (Html.BeginFormAntiForgeryPost(Url.Action("ImportFromXml"), FormMethod.Post, new { enctype = "multipart/form-data" }))
+{
+    @Html.ValidationSummary()
+    <input type="file" name="FileUpload" />
+    <input type="submit" name="Upload.Submit" value="@T("Upload")" />
+}
